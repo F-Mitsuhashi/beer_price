@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夏祭り販売計算アプリ</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f0f2f5; }
+        .container { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h1, h2, h3 { text-align: center; color: #333; }
+        .input-group { margin-bottom: 20px; }
+        .label-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        label { font-weight: bold; color: #555; }
+        .price-display { font-size: 1em; color: #888; }
+        input[type="number"] { width: 100%; padding: 10px; font-size: 1.2em; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .result { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 10px; }
+        .result p { margin: 5px 0; font-size: 1.1em; color: #333; }
+        .result span { font-weight: bold; font-size: 1.2em; color: #007bff; }
+        .settings-toggle { text-align: center; margin-top: 20px; }
+        .settings-toggle button { background: none; border: none; font-size: 1.2em; cursor: pointer; color: #6c757d; }
+        .settings-toggle button span { font-size: 1.6em; vertical-align: middle; margin-right: 5px; }
+        .settings-container { display: none; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>夏祭り販売計算</h1>
+    
+    <h3>販売数入力</h3>
+    <div class="input-group">
+        <div class="label-container">
+            <label for="beer-count">ビールの本数</label>
+            <span id="beer-price-display" class="price-display">（0円）</span>
+        </div>
+        <input type="number" id="beer-count" min="0" max="9" oninput="calculate()">
+    </div>
+    <div class="input-group">
+        <div class="label-container">
+            <label for="non-alcohol-count">ノンアルの本数</label>
+            <span id="non-alcohol-price-display" class="price-display">（0円）</span>
+        </div>
+        <input type="number" id="non-alcohol-count" min="0" max="9" oninput="calculate()">
+    </div>
+
+    <div class="result">
+        <h2>合計金額</h2>
+        <p><span id="total-amount">0</span> 円</p>
+    </div>
+
+    <div class="result">
+        <h2>お釣り計算</h2>
+        <p>1,000円札で支払い: <span id="change-1000">0</span> 円</p>
+        <p>5,000円札で支払い: <span id="change-5000">0</span> 円</p>
+        <p>10,000円札で支払い: <span id="change-10000">0</span> 円</p>
+    </div>
+
+    <div class="input-group" style="margin-top: 20px;">
+        <label for="custom-paid">任意のお預かり金額</label>
+        <input type="number" id="custom-paid" min="0" oninput="calculate()">
+    </div>
+    <div class="result">
+        <p>お釣り: <span id="custom-change">0</span> 円</p>
+    </div>
+
+    <div class="settings-toggle">
+        <button onclick="toggleSettings()"><span>⚙️</span>設定</button>
+    </div>
+
+    <div id="settings-container" class="settings-container">
+        <h3>価格設定</h3>
+        <div class="input-group">
+            <label for="beer-price">ビールの単価</label>
+            <input type="number" id="beer-price" value="550" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label for="non-alcohol-price">ノンアルコールの単価</label>
+            <input type="number" id="non-alcohol-price" value="380" oninput="calculate()">
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const beerPrice = parseInt(document.getElementById('beer-price').value) || 0;
+        const nonAlcoholPrice = parseInt(document.getElementById('non-alcohol-price').value) || 0;
+        
+        document.getElementById('beer-price-display').textContent = `（${beerPrice}円）`;
+        document.getElementById('non-alcohol-price-display').textContent = `（${nonAlcoholPrice}円）`;
+
+        const beerCount = parseInt(document.getElementById('beer-count').value) || 0;
+        const nonAlcoholCount = parseInt(document.getElementById('non-alcohol-count').value) || 0;
+        const customPaid = parseInt(document.getElementById('custom-paid').value) || 0;
+
+        const total = (beerCount * beerPrice) + (nonAlcoholCount * nonAlcoholPrice);
+        
+        document.getElementById('total-amount').textContent = total;
+
+        const paid1000 = Math.ceil(total / 1000) * 1000;
+        document.getElementById('change-1000').textContent = (total > 0) ? paid1000 - total : 0;
+
+        document.getElementById('change-5000').textContent = (total > 0) ? 5000 - total : 0;
+        document.getElementById('change-10000').textContent = (total > 0) ? 10000 - total : 0;
+        
+        document.getElementById('custom-change').textContent = (customPaid > 0) ? customPaid - total : 0;
+    }
+    
+    function toggleSettings() {
+        const settings = document.getElementById('settings-container');
+        const button = document.querySelector('.settings-toggle button');
+        
+        if (settings.style.display === 'none' || settings.style.display === '') {
+            settings.style.display = 'block';
+            button.textContent = '⚙️ 設定を閉じる';
+        } else {
+            settings.style.display = 'none';
+            button.textContent = '⚙️ 設定';
+        }
+    }
+
+    calculate();
+</script>
+
+</body>
+</html>
